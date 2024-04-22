@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}
+  Карточка {{ object.ful_name }}
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 col-xl-3">
+      <div class="card w-75 mx-auto text-center border-secondary-subtle">
+        {% if user.is_staff or user.is_superuser%}
+          <a href="{% url 'bnovo:sauna_edit' object.pk %}" style="text-decoration: 
+          #1a1d20">
+          <h4 class="card-header bg-success-subtle">Карта гостя</h4>
+        </a>
+          {% else %}
+          <h4 class="card-header bg-success-subtle">Карта гостя</h4>
+        {% endif %}
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">{{ object.ful_name }}</li>
+          <li class="list-group-item">{{ object.phone }}</li>
+          <li class="list-group-item">Заезд: {{ sauna.start }}</li>
+          <li class="list-group-item">Выезд: {{ sauna.end }}</li>
+          <li class="list-group-item">Кол. человек -
+            {{ object.people_count }}</li>
+          {% if sauna.rotenburo %}
+            <li class="list-group-item">Ротенбуро - надо.</li>
+          {% else %}
+            <li class="list-group-item">Ротенбуро - не надо.</li>
+
+          {% endif %}
+          <li class="list-group-item">Предоплата -
+            {{ object.prepayment }}</li>
+          <li class="list-group-item">Веник бер. -
+            {{ object.birch_broom }}</li>
+          <li class="list-group-item">Веник дуб - {{ object.oak_broom }}</li>
+          <li class="list-group-item">Простыня - {{ object.bed_sheet }}</li>
+          <li class="list-group-item">Полотенце - {{ object.towel }}</li>
+          <li class="list-group-item">Халат - {{ object.robe }}</li>
+          <li class="list-group-item">Тапки - {{ object.slippers }}</li>
+          <li class="list-group-item">Комментарий - {{ object.comment }}</li>
+        </ul>
+        <a href="{% url 'bnovo:today_list' %}" style="text-decoration: 
+          #1a1d20">
+          <h4 class="card-footer ">Вернуться к ордерам</h4>
+        </a>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

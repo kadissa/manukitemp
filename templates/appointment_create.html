@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% block content %}
+  {#{% if not date and not time %}#}
+  {#	{% include 'includes/date_choice.html' %}#}
+  {#  {% elif not time %}#}
+  {#  {% include 'includes/time_slots.html' %}#}
+  {#{% endif %} #}
+  <div class="btn"></div>
+  <div class="container class_form bg-gradient bg-warning-subtle w-50 
+    border">
+    <h1 class="text-3 text-center">Аренда Банного комплекса</h1>
+    <div class="row justify-content-center">
+
+      <form 
+              method="post" action="" style="width: 50%;">
+        <div class="form-select-sm">
+          <label for="start"><b>Выбрать день</b></label>
+          <input hx-get="{% url 'appointment_create' %}" 
+                 hx-target="#time-slots"
+{#                 hx-trigger="click"#}
+                 type="date" 
+                 id="start" value="{{ max_day }}" 
+                 name="date"
+                 min="{{ min_day }}"
+                 max="{{ max_day }}" class="form-control-sm"
+          >
+        </div>
+{#        <div style="float: right">#}
+{#          <button class="btn btn-success" type="submit">Далее</button>#}
+{#        </div>#}
+      </form>
+    </div>
+  </div>
+
+  <div class="btn"></div>
+  <div class="btn bg-white">
+    <a class="info_button" href="">13:00-14:00</a>
+    <div style="font-size: 10px; ">{{ date }}</div>
+  </div>
+  <div class="container text-center" id="time-slots">
+  {% include 'includes/time_slots.html' %}
+  </div>
+  
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>-------------------------hhhh--------------------------------------</p>
+
+
+{#  <div class="container text-center">#}
+{#  #}
+{#    <p class="slots__date">#}
+{#      <b>Выбрана дата {{ date }}</b>#}
+{#    </p>#}
+{#  #}
+{#    {% for time_slot in all_time %}#}
+{#    	 <button data-slot="1" type="button" class="">#}
+{#    <span data-price="2 000 ₽">{{ time_slot }}</span>#}
+{#    </button>#}
+{#    {% endfor %}#}
+{#    #}
+{#  </div>#}
+
+{#      <button data-slot="0" type="button" class="btn btn-warning bg-white">#}
+{#        <span data-price="2 000 ₽">#}
+{#          11:00—12:00#}
+{#        </span>#}
+{#        <span>{{ date }}</span>#}
+{#      </button>#}
+{#    #}
+{#    <button data-slot="1" type="button" class="">#}
+{#    <span data-price="2 000 ₽">12:00—13:00</span>#}
+{#    </button>#}
+{#    #}
+{#    <button data-slot="2" type="button" class="">#}
+{#    <span data-price="2 000 ₽"> 13:00—14:00 </span>#}
+{#    </button>#}
+{#    #}
+{#    #}
+{#    <button data-slot="3" type="button" class="mt-3">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        14:00—15:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="4" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        15:00—16:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="5" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        16:00—17:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="6" type="button" class="mt-3">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        17:00—18:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="7" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        18:00—19:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="8" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        19:00—20:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="9" type="button" class="mt-3">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        20:00—21:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="10" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        21:00—22:00#}
+{#                    </span>#}
+{#    </button>#}
+{#    <button data-slot="11" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        22:00—23:00#}
+{#                    </span>#}
+{#    </button>#}
+{#  </div>#}
+
+
+{#<li class="ew-booking-slots__item">#}
+{#  <p class="ew-booking-slots__date">#}
+{#    <b>Выбрана дата {{ апр }}</b>#}
+{#  </p>#}
+{#  <button data-slot="2024-04-16|0" type="button" class="btn btn-warning #}
+{#  bg-white">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        11:00—12:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|1" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        12:00—13:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|2" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        13:00—14:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|3" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        14:00—15:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|4" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        15:00—16:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|5" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        16:00—17:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|6" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        17:00—18:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|7" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        18:00—19:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|8" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        19:00—20:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|9" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        20:00—21:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|10" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        21:00—22:00#}
+{#                    </span>#}
+{#  </button>#}
+{#  <button data-slot="2024-04-16|11" type="button" class="">#}
+{#    <span tabindex="-1"#}
+{#          data-quantity="1 место"#}
+{#          data-price="2 000 ₽">#}
+{#                        22:00—23:00#}
+{#                    </span>#}
+{#  </button>#}
+{#</li>#}
