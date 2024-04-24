@@ -9,27 +9,25 @@
   {#{% endif %} #}
   <div class="btn"></div>
   <div class="container class_form bg-gradient bg-warning-subtle w-50 
-    border">
+    border rounded">
     <h1 class="text-3 text-center">Аренда Банного комплекса</h1>
     <div class="row justify-content-center">
 
-      <form 
+      <form
               method="post" action="" style="width: 50%;">
         <div class="form-select-sm">
           <label for="start"><b>Выбрать день</b></label>
-          <input hx-get="{% url 'appointment_create' %}" 
+          <input hx-get="{% url 'appointment_create' %}"
                  hx-target="#time-slots"
+                  hx-push-url="false"
 {#                 hx-trigger="click"#}
-                 type="date" 
-                 id="start" value="{{ max_day }}" 
+                 type="date"
+                 id="start" value="{{ max_day }}"
                  name="date"
                  min="{{ min_day }}"
                  max="{{ max_day }}" class="form-control-sm"
           >
         </div>
-{#        <div style="float: right">#}
-{#          <button class="btn btn-success" type="submit">Далее</button>#}
-{#        </div>#}
       </form>
     </div>
   </div>
@@ -40,9 +38,31 @@
     <div style="font-size: 10px; ">{{ date }}</div>
   </div>
   <div class="container text-center" id="time-slots">
-  {% include 'includes/time_slots.html' %}
+    <button type="button " class="btn border-bottom text-bg-info 
+        text-white"><h6>День не выбран</h6></button>
+    <div class="row row-cols-md-6  justify-content-center">
+      {% for time_slot in available_slots %}
+        <div class="col">
+        
+        
+        
+        
+        
+          <input type="text" name="time" size="8"
+                 value="{{ time_slot }}"
+                 class="mt-3 btn btn-warning bg-white"
+                 hx-post="{% url 'appointment_create' %}"
+                 hx-trigger="click"
+                 hx-push-url="true"
+                 readonly
+          >
+        </div>
+      {% endfor %}
+
+    </div>
+
   </div>
-  
+
 {% endblock %}
 
 

@@ -1,0 +1,15 @@
+    <div class="row row-cols-md-6  justify-content-center">
+      {% for time_slot in available_slots %}
+        <div class="col">
+          <input type="text" name="time" size="8"
+                 value="{{ time_slot }}"
+                 class="mt-3 btn btn-warning bg-white"
+                 hx-post="{% url 'appointment_create' %}"
+                 hx-trigger="click"
+                 hx-push-url="true"
+                 readonly
+          >
+        </div>
+      {% endfor %}
+
+    </div>

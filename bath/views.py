@@ -9,14 +9,45 @@ from .models import Customer, Appointment
 from .forms import ItemForm, AppointmentForm, CustomerForm
 from django.utils import timezone
 
+times = set()
+date = None
 
-def temp(request):
-    app = Appointment.objects.all()
-    context = {'context': 'context', 'app': app}
+
+def get_day(request):
+    all_time_dict = {'11': '11:00-12:00', '12': '12:00-13:00',
+                     '13': '13:00-14:00',
+                     '14': '14:00-15:00', '15': '15:00-16:00',
+                     '16': '16:00-17:00',
+                     '17': '17:00-18:00', '18': '18:00-19:00',
+                     '19': '19:00-20:00',
+                     '20': '20:00-21:00', '21': '21:00-22:00',
+                     '22': '22:00-23:00'}
+    today = datetime.date.today()
+    min_day_value = today.isoformat()
+    max_day_value = today + datetime.timedelta(days=90)
+    if request.GET.get('date'):
+        request_date = request.GET.get('date')
+        context = {
+            'min_day': min_day_value, 'max_day': max_day_value,
+            'available_slots': all_time_dict.values(),
+            'today': today.isoformat(),
+            'date': datetime.date.fromisoformat(request_date).strftime(
+                '%d-%m-%Y')
+
+        }
+    else:
+        context = {
+            'min_day': min_day_value, 'max_day': max_day_value,
+            'available_slots': all_time_dict.values(),
+            'today': today.isoformat(),
+        }
+
     return render(request, 'temp.html', context)
 
 
 def appointment_create(request):
+    global date
+    global times
     all_time_dict = {'11': '11:00-12:00', '12': '12:00-13:00',
                      '13': '13:00-14:00',
                      '14': '14:00-15:00', '15': '15:00-16:00',
@@ -29,40 +60,54 @@ def appointment_create(request):
     today = datetime.date.today()
     min_day_value = today.isoformat()
     max_day_value = today + datetime.timedelta(days=90)
+    if request.GET.get('date'):
+        date = request.GET.get('date')
     request_date = request.GET.get('date')
-    request_time = request.GET.get('time')
-    print(request_time)
-    if request_date:
+    request_time = request.POST.get('time')
+    if request_time:
+        times.add(request_time)
+    print(f'request_date={request_date}')
+    print(f'date={date}')
+    print(f'times={times}')
+    if date:
         appointments = Appointment.objects.filter(
-            date=datetime.date.fromisoformat(request_date))
+            date=datetime.date.fromisoformat(date))
         for appointment in appointments:  # get available slots for booking
-            start = appointment.start_time.isoformat('hours')
+            start = (appointment.start_time.isoformat('hours'))
             end = appointment.end_time.isoformat('hours')
-            slots_to_remove = range(int(start), int(end) + 1)
+            if start == '11':
+                slots_to_remove = range(int(start), int(end) + 1)
+            elif start == '22':
+                slots_to_remove = range(int(start) - 1, int(end))
+            else:
+                slots_to_remove = range(int(start) - 1, int(end) + 1)
             for slot in slots_to_remove:
                 all_time_dict.pop(str(slot))
         context = {
             'min_day': min_day_value, 'max_day': max_day_value,
             'available_slots': all_time_dict.values(),
             'today': today.isoformat(),
-            'date': datetime.date.fromisoformat(request_date).strftime(
-                '%d-%m-%Y')
+            'date': datetime.date.fromisoformat(date),
+            'times': times
 
         }
-        return render(request, 'includes/time_slots.html', context)
+        return render(request, 't_slot.html', context)
     else:
+        print(f'if not request_date: date={date}')
+
         context = {
             'min_day': min_day_value, 'max_day': max_day_value,
             'available_slots': all_time_dict.values(),
             'today': today.isoformat(),
+            'date': datetime.date.today()
 
         }
-    print(request_date)
     if request.method == 'POST':
         pprint(request.POST.get('time'))
         context = {'min_day': min_day_value, 'max_day': max_day_value,
                    'available_slots': all_time_dict.values(),
                    'today': today.isoformat(),
+                   'date': datetime.date.fromisoformat(date)
                    }
     # if request.method == 'POST':
     #     time = request.POST.get('time')
@@ -110,3 +155,82 @@ def get_finish(request):
         return redirect('success')
     context = {'form': form, 'as': '11:00-12:00'}
     return render(request, 'finish_enter.html', context)
+
+
+def get_date(request):
+    global date
+    global times
+    times = set()
+    date = None
+    today = datetime.date.today()
+    min_day_value = today.isoformat()
+    max_day_value = today + datetime.timedelta(days=90)
+    request_date = request.GET.get('date')
+    date = request_date
+    request_time = request.POST.get('time')
+    print(f'request_date={request_date}')
+    print(f'date={date}')
+    print(request_time)
+    if request_date:
+        context = {
+            'min_day': min_day_value, 'max_day': max_day_value,
+            'today': today.isoformat(),
+            'date': datetime.date.fromisoformat(request_date).strftime(
+                '%d-%m-%Y')
+
+        }
+        return redirect('time', request_date)
+    else:
+        context = {
+            'min_day': min_day_value, 'max_day': max_day_value,
+            'today': today.isoformat(),
+
+        }
+    return render(request, 'includes/date_choice.html', context)
+
+
+def get_time(request, day):
+    global times
+    all_time_dict = {'11': '11:00-12:00', '12': '12:00-13:00',
+                     '13': '13:00-14:00',
+                     '14': '14:00-15:00', '15': '15:00-16:00',
+                     '16': '16:00-17:00',
+                     '17': '17:00-18:00', '18': '18:00-19:00',
+                     '19': '19:00-20:00',
+                     '20': '20:00-21:00', '21': '21:00-22:00',
+                     '22': '22:00-23:00'}
+    print(f'date={day}')
+    today = datetime.date.today()
+
+    request_time = request.POST.get('time')
+    print(f'request_time={request_time}')
+    appointments = Appointment.objects.filter(
+                    date=datetime.date.fromisoformat(day))
+    for appointment in appointments:  # get available slots for booking
+        start = (appointment.start_time.isoformat('hours'))
+        end = appointment.end_time.isoformat('hours')
+        if start == '11':
+            slots_to_remove = range(int(start), int(end) + 1)
+        elif start == '22':
+            slots_to_remove = range(int(start)-1, int(end))
+        else:
+            slots_to_remove = range(int(start)-1, int(end) + 1)
+        for slot in slots_to_remove:
+            all_time_dict.pop(str(slot))
+    context = {
+        'today': today.isoformat(),
+        'available_slots': all_time_dict,
+        'date': datetime.date.fromisoformat(day)
+    }
+    if request_time:
+        times.add(request_time)
+        context['times'] = times
+        context['truly'] = 'truly'
+        print(f'context={context}')
+        return redirect('time', day)
+
+    context['times'] = times
+
+    print(f'times={times}')
+    return render(request, 'includes/time_slots.html', context)
+
