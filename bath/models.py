@@ -1,14 +1,18 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, EmailValidator
 from django.db import models
-from django.urls import reverse
-# from phonenumber_field.modelfields import PhoneNumberField
+
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 
 class Customer(models.Model):
     name = models.CharField('Имя', max_length=60)
     surname = models.CharField('Фамилия', max_length=50, blank=True, null=True)
-    email = models.EmailField(max_length=60, blank=True, null=True)
-    phone = models.PositiveSmallIntegerField('Телефон')
+    email = models.EmailField(max_length=60,
+                              validators=[EmailValidator()],
+                              blank=True,
+                              null=True)
+    phone = PhoneNumberField('Телефон')
 
     class Meta:
         verbose_name = 'Клиент'
@@ -101,22 +105,33 @@ class Item(models.Model):
                                      verbose_name='Номер заказа')
     rotenburo = models.PositiveSmallIntegerField('Ротэнбуро', blank=True,
                                                  null=True,
-                                                 help_text='Количество часов')
-    birch_broom = models.PositiveSmallIntegerField('Веник бер.', blank=True,
-                                                   null=True, help_text='штук')
+                                                 # help_text='Количество часов'
+                                                 )
+    birch_broom = models.PositiveSmallIntegerField('Веник берёза',
+                                                   blank=True,
+                                                   null=True,
+                                                   # help_text='штук'
+                                                   )
     oak_broom = models.PositiveSmallIntegerField('Веник дуб', blank=True,
-                                                 null=True, help_text='штук')
+                                                 null=True,
+                                                 # help_text='штук'
+                                                 )
     bed_sheet = models.PositiveSmallIntegerField('Простыня', blank=True,
-                                                 null=True, help_text='штук')
+                                                 null=True,
+                                                 # help_text='штук'
+                                                 )
     towel = models.PositiveSmallIntegerField('Полотенце', blank=True,
-                                             null=True, help_text='штук')
+                                             null=True,
+                                             # help_text='штук'
+                                             )
     robe = models.PositiveSmallIntegerField('Халат', blank=True, null=True,
-                                            help_text='штук')
+                                            # help_text='штук'
+                                            )
     slippers = models.PositiveSmallIntegerField('Тапки', blank=True, null=True,
-                                                help_text='штук')
-    created_at = models.DateTimeField(auto_now_add=True, blank=True,
-                                      null=True, )
-    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True, )
+                                                # help_text='штук'
+                                                )
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return 'Допы'

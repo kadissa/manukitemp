@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Пользователь
+{% endblock %}
+{% block content %}
+  <form action="" method="post">
+  {% csrf_token %}
+    <div  class="col-md-4">{{ form | crispy }}</div>
+    <div class="form-select-sm">
+          <label for="start"><b>Выбрать день</b></label>
+          <input type="date" id="start" value="{{ min_day }}" name="date"
+                 min="{{ min_day }}"
+                 max="{{ max_day }}" class="form-control-sm"
+          >
+        </div>
+  <button type="submit" class="btn btn-success">Далее</button>
+  </form>
+{% endblock %}
