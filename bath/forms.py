@@ -1,7 +1,6 @@
 from django import forms
 from .models import Appointment, Customer, Item
 from crispy_forms.helper import FormHelper
-from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 
 class AppointmentForm(forms.ModelForm):
@@ -15,6 +14,13 @@ class AppointmentForm(forms.ModelForm):
 
 
 class ItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['rotenburo'].label = 'Ротенбуро'
+
+    def set_label_rotenburo(self, x):
+        self.fields['rotenburo'].label = f'Ротенбуро {x}р/ч'
+
     class Meta:
         model = Item
         fields = (
@@ -28,19 +34,19 @@ class ItemForm(forms.ModelForm):
         )
         widgets = {
             'rotenburo': forms.TextInput(
-                attrs={'placeholder': 'Ротенбуро: сколько часов'}),
+                attrs={'placeholder': 'Ротенбуро:   кол. часов'}),
             'birch_broom': forms.TextInput(
-                attrs={'placeholder': 'Веник берёза:    штук'}),
+                attrs={'placeholder': 'Веник берёза 300р. :    штук'}),
             'oak_broom': forms.TextInput(
-                attrs={'placeholder': 'Веник дуб:   штук'}),
+                attrs={'placeholder': 'Веник дуб 300р. :   штук'}),
             'bed_sheet': forms.TextInput(
-                attrs={'placeholder': 'Простыня:   штук'}),
+                attrs={'placeholder': 'Простыня 100р. :   штук'}),
             'towel': forms.TextInput(
-                attrs={'placeholder': 'Полотенце:    штук'}),
+                attrs={'placeholder': 'Полотенце 100р. :    штук'}),
             'robe': forms.TextInput(
-                attrs={'placeholder': 'Халат:   штук'}),
+                attrs={'placeholder': 'Халат 100р. :   штук'}),
             'slippers': forms.TextInput(
-                attrs={'placeholder': 'Тапки:   количество пар'}),
+                attrs={'placeholder': 'Тапки 100р. :   кол. пар'}),
 
         }
         labels = {'birch_broom': '', 'rotenburo': '',
@@ -53,14 +59,16 @@ class ItemForm(forms.ModelForm):
 
 
 class CustomerForm(forms.ModelForm):
-    # helper = FormHelper()
+    email = forms.EmailField(
+        widget=forms.TextInput(attrs={'placeholder': 'Email'}),
+        label=''
+    )
 
     class Meta:
         model = Customer
-        fields = ('name', 'email', 'phone')
+        fields = ('email', 'name', 'phone')
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Имя'}),
-            'email': forms.TextInput(attrs={'placeholder': 'Email'}),
-            # 'phone': RegionalPhoneNumberWidget(),
+            'phone': forms.TextInput(attrs={'placeholder': 'Телефон'})
         }
         labels = {'name': '', 'email': '', 'phone': ''}

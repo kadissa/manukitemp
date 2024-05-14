@@ -3,15 +3,21 @@
 {% load crispy_forms_tags %}
 {% load crispy_forms_field %}
 {% block content %}
+  <h4>{% for message in messages %}
+    {{ message }}
+  {% endfor %}</h4>
+  
   <form action="" method="post">
   {% csrf_token %}
-  <div class="col-md-4">
-          {{ customer_form | crispy }}
-    {{ services_form| crispy }}
-{#    <div class="form-group-row">#}
-{#      <label for="name" class=" col-form-label">Имя</label><br>#}
-{#      <input type="text" name="name" id="name" class="form-control"#}
-{#         value="{{ as }}"    hx-post="{% url 'finish' %}" hx-trigger="click">#}
-    </div>
+    <div class="row">
+     
+      <div class="col-md-4 col-xl-4 col-auto mx-auto mt-5">
+        {{ services_form| crispy }}
+        {#    <div class="form-group-row">#}
+        {#      <label for="name" class=" col-form-label">Имя</label><br>#}
+        {#      <input type="text" name="name" id="name" class="form-control"#}
+        {#         value="{{ as }}"    hx-post="{% url 'finish' %}" hx-trigger="click">#}
+      </div>
+      </div>
   </form>
 {% endblock %}

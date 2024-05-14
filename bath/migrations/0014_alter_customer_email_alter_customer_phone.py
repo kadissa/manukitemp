@@ -2,7 +2,6 @@
 
 import django.core.validators
 from django.db import migrations, models
-import phonenumber_field.modelfields
 
 
 class Migration(migrations.Migration):
@@ -20,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customer',
             name='phone',
-            field=phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None, verbose_name='Телефон'),
+            field=models.CharField(max_length=15, verbose_name='Телефон'),
         ),
     ]
