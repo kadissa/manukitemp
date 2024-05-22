@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bath.models import Appointment, Customer, Item
+from bath.models import Appointment, Customer, Item, Product
 
 
 class AppointmentAdminInline(admin.TabularInline):
@@ -9,6 +9,12 @@ class AppointmentAdminInline(admin.TabularInline):
 
 class CustomerAdminInline(admin.TabularInline):
     model = Customer
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'quantity', 'price')
+    prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Appointment)
@@ -38,6 +44,7 @@ class CustomerAdmin(admin.ModelAdmin):
         'phone',
     )
     inlines = [AppointmentAdminInline]
+
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):

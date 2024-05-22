@@ -1,5 +1,7 @@
 import datetime
 from pprint import pprint
+
+from django.views.decorators.http import require_POST
 from django_htmx.http import HttpResponseClientRedirect
 from django.contrib import messages
 from django.contrib import messages
@@ -7,8 +9,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView
-from .models import Customer, Appointment, Item
-from .forms import ItemForm, AppointmentForm, CustomerForm
+
+from .cart import Cart
+from .models import Customer, Appointment, Item, Product
+from .forms import ItemForm, AppointmentForm, CustomerForm, CartAddProductForm
 from django.utils import timezone
 
 times = list()
@@ -16,6 +20,50 @@ times = list()
 
 def error(request):
     return render(request, 'error.html')
+
+
+def product_list(request):
+    cart = Cart(request)
+    products = Product.objects.all()
+    print('if request.method == POST1')
+
+    for product in products:
+        print('if request.method == POST2')
+        quantity = request.POST.get(f'{product}')
+        cart.add(product=product, quantity=quantity)
+        pprint(cart.__dict__)
+    if request.method == 'POST':
+        return redirect('cart')
+    print(request.session['cart'])
+
+    context = {
+        'products': products,
+        'cart': cart
+    }
+
+    return render(request, 'products.html', context)
+
+
+# @require_POST
+# def add_product(request, product_id):
+#     product_rotenburo = Product.objects.all().first()
+#     products = Product.objects.all().exclude(pk=product_rotenburo.pk)
+#     cart = Cart(request)
+#     rotenburo_form = CartAddProductForm(request.POST or None)
+#     if rotenburo_form.is_valid():
+#         cart.add(rotenburo_form.cleaned_data["quantity"])
+#     form = CartAddProductForm(request.POST or None)
+#     print(f'quantity = {form.cleaned_data["quantity"]}')
+#     if form.is_valid():
+#         cart.add(product_list=products, quantity=form.cleaned_data['quantity'])
+#     return redirect('cart')
+
+
+def cart_detail(request):
+
+    print('cart_detail', request.session['cart'])
+    return render(request, 'cart_detail.html', {'cart': request.session[
+        'cart']})
 
 
 def items_view(request, pk):
@@ -66,32 +114,32 @@ def create_appointment(request, day, user_id):
         return redirect('error')
 
 
-def get_user_and_date(request, user_id):
+def get_customer_and_date(request):
     request_date = request.POST.get('date')
-    if user_id != 0 and Customer.objects.filter(id=user_id).exists():
-        user = get_object_or_404(Customer, id=user_id)
-        form = CustomerForm(request.POST or None, instance=user)
+    print(f'request.session: {request.session.items()}')
+    customer_id = request.session.get('customer_id', 0)
+    if Customer.objects.filter(id=customer_id).exists():
+        customer = get_object_or_404(Customer,
+                                     id=request.session['customer_id'])
+        form = CustomerForm(request.POST or None, instance=customer)
     else:
         form = CustomerForm(request.POST or None)
     global times
     times = list()
     if form.is_valid():
-        form.save(commit=False)
         if not Customer.objects.filter(
-                phone=form.cleaned_data['phone'],
-                email=form.cleaned_data['email'],
-        ).exists():
+                phone=form.cleaned_data['phone'], ).exists():
             form.save()
-        user = Customer.objects.get(phone=form.cleaned_data['phone'],
-                                    email=form.cleaned_data['email'])
-        return redirect('time', request_date, user.id)
-
+        customer = Customer.objects.get(phone=form.cleaned_data['phone'],
+                                        email=form.cleaned_data['email'])
+        request.session['customer_id'] = customer.id
+        return redirect('time', request_date, customer.id)
     today = datetime.date.today()
     min_day_value = today.isoformat()
     max_day_value = today + datetime.timedelta(days=60)
     context = {
         'min_day': min_day_value, 'max_day': max_day_value,
-        'today': today.isoformat(), 'form': form, 'user_id': user_id,
+        'today': today.isoformat(), 'form': form, 'user_id': customer_id,
     }
     return render(request, 'user.html', context)
 

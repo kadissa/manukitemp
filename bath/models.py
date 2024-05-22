@@ -25,30 +25,23 @@ class Item(models.Model):
                              error_messages='Не заполнено поле name')
     rotenburo = models.PositiveSmallIntegerField('Ротэнбуро', blank=True,
                                                  null=True,
-                                                 # help_text='Количество часов'
                                                  )
     birch_broom = models.PositiveSmallIntegerField('Веник берёза',
                                                    blank=True,
                                                    null=True,
-                                                   # help_text='штук'
                                                    )
     oak_broom = models.PositiveSmallIntegerField('Веник дуб', blank=True,
                                                  null=True,
-                                                 # help_text='штук'
                                                  )
     bed_sheet = models.PositiveSmallIntegerField('Простыня', blank=True,
                                                  null=True,
-                                                 # help_text='штук'
                                                  )
     towel = models.PositiveSmallIntegerField('Полотенце', blank=True,
                                              null=True,
-                                             # help_text='штук'
                                              )
     robe = models.PositiveSmallIntegerField('Халат', blank=True, null=True,
-                                            # help_text='штук'
                                             )
     slippers = models.PositiveSmallIntegerField('Тапки', blank=True, null=True,
-                                                # help_text='штук'
                                                 )
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
@@ -104,7 +97,30 @@ class Appointment(models.Model):
         verbose_name_plural = 'Бронирования'
 
     def __str__(self):
-        return f'Бронь {self.id}. Гость-{self.customer.name}'
+        return f'Запись {self.id}. Гость-{self.customer.name}'
 
     # def get_absolute_url(self):
     #     return reverse('bnovo:sauna_detail', kwargs={'pk': self.id})
+
+
+class Product(models.Model):
+    name = models.CharField('Название', max_length=60)
+    quantity = models.PositiveIntegerField('Количество', null=True, blank=True)
+    price = models.PositiveSmallIntegerField('Цена')
+    slug = models.SlugField(max_length=60, db_index=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    # def get_absolute_url(self):
+    #     return reverse('bath:product_detail',
+    #                    args=[self.id, self.slug])
+
+    class Meta:
+        ordering = ('id',)
+        index_together = (('name', 'slug'),)
+        verbose_name = 'Аксессуары'
+        verbose_name_plural = 'Аксессуар'

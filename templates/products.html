@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% block title %}
+  Услуги
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 col-xl-4">
+      <div class="card w-75 mx-auto text-center border-secondary-subtle">
+        {% if messages %}
+          {% for message in messages %}
+            <h4 class="card-header bg-danger">
+              {{ message }}
+            </h4>
+          {% endfor %}
+        {% else %}
+          <h4 class="card-header bg-success-subtle">Добавить
+            аксессуары</h4>
+        {% endif %}
+        <ul class="list-group list-group-flush">
+
+          <form action="" method="post">
+            {% csrf_token %}
+            {% for product in products %}
+              {% if forloop.first %}
+                <li class="list-group-item">
+                  <label for="{{ product }}">
+                    {{ product.name }} {{ product.price }}р/ч.
+                  </label>
+                  <input type="number" name="{{ product.name }}"
+                         id="{{ product }}"
+                         placeholder="часов.">
+                </li>
+              {% else %}
+                <li class="list-group-item">
+                  <label for="{{ product }}">
+                    {{ product.name }} {{ product.price }}р.
+                  </label>
+                  <input type="number" name="{{ product.name }}"
+                         id="{{ product }}"
+                         placeholder="шт.">
+                </li>
+              {% endif %}
+            {% endfor %}
+
+
+            <button type="submit" class="btn btn-secondary
+            rounded-1 text-black">
+              Отменить
+            </button>
+            <button type="submit" class="btn  btn-info">
+              Добавить
+            </button>
+          </form>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
