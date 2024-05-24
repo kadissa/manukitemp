@@ -4,7 +4,6 @@ from pprint import pprint
 from django.views.decorators.http import require_POST
 from django_htmx.http import HttpResponseClientRedirect
 from django.contrib import messages
-from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
@@ -32,6 +31,8 @@ def product_list(request):
         quantity = request.POST.get(f'{product}')
         cart.add(product=product, quantity=quantity)
         pprint(cart.__dict__)
+    total_price = cart.get_total_price()
+    print(f'total price: {total_price}')
     if request.method == 'POST':
         return redirect('cart')
     print(request.session['cart'])
@@ -44,49 +45,36 @@ def product_list(request):
     return render(request, 'products.html', context)
 
 
-# @require_POST
-# def add_product(request, product_id):
-#     product_rotenburo = Product.objects.all().first()
-#     products = Product.objects.all().exclude(pk=product_rotenburo.pk)
-#     cart = Cart(request)
-#     rotenburo_form = CartAddProductForm(request.POST or None)
-#     if rotenburo_form.is_valid():
-#         cart.add(rotenburo_form.cleaned_data["quantity"])
-#     form = CartAddProductForm(request.POST or None)
-#     print(f'quantity = {form.cleaned_data["quantity"]}')
-#     if form.is_valid():
-#         cart.add(product_list=products, quantity=form.cleaned_data['quantity'])
-#     return redirect('cart')
-
-
 def cart_detail(request):
+    cart_instance = Cart(request)
+    cart = request.session['cart']
+    # total_price = cart.get_total_price()
+    return render(request, 'cart_detail.html', {'cart': cart,
+                                                # 'total_price': total_price
+                                                'cart_instance': cart_instance})
 
-    print('cart_detail', request.session['cart'])
-    return render(request, 'cart_detail.html', {'cart': request.session[
-        'cart']})
 
-
-def items_view(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
-    form = ItemForm(request.POST or None)
-    form.set_label_rotenburo(x=2000)
-    print(f'appointmen.customer: {appointment.customer}')
-    if form.is_valid():
-        if not appointment.items:
-            item = form.save(commit=False)
-            item.name = appointment.customer
-
-            form.save()
-            # item.save()
-            appointment.items = item
-            appointment.save()
-            return redirect('confirm_items', pk=pk)
-        else:
-            messages.error(request, 'Вы не можете редактировать список доп. '
-                                    'услуг, пожалуйста обратитесь к '
-                                    'администратору')
-    context = {'form': form, 'appoint_id': pk}
-    return render(request, 'service.html', context)
+# def items_view(request, pk):
+#     appointment = get_object_or_404(Appointment, pk=pk)
+#     form = ItemForm(request.POST or None)
+#     form.set_label_rotenburo(x=2000)
+#     print(f'appointmen.customer: {appointment.customer}')
+#     if form.is_valid():
+#         if not appointment.items:
+#             item = form.save(commit=False)
+#             item.name = appointment.customer
+#
+#             form.save()
+#             # item.save()
+#             appointment.items = item
+#             appointment.save()
+#             return redirect('confirm_items', pk=pk)
+#         else:
+#             messages.error(request, 'Вы не можете редактировать список доп. '
+#                                     'услуг, пожалуйста обратитесь к '
+#                                     'администратору')
+#     context = {'form': form, 'appoint_id': pk}
+#     return render(request, 'service.html', context)
 
 
 def finish_view(request, appoint_id):

@@ -15,12 +15,17 @@ class Cart(object):
         """
         Add a product to the cart
         """
+        # self.cart['cart_price'] = 0
         product_name = product.name
         self.cart[product_name] = {'quantity': quantity,
                                    'price': str(product.price)}
 
         self.cart[product_name]['quantity'] = quantity
-
+        if self.cart[product_name]['quantity']:
+            self.cart[product_name]['total_price'] = (
+                    product.price * int(self.cart[product_name]['quantity'])
+            )
+            # self.cart['cart_price'] += self.cart[product_name]['total_price']
         self.save()
 
     def save(self):
@@ -42,25 +47,30 @@ class Cart(object):
         """
         Iterate over the cart
         """
-        product_names = self.cart.keys()
+        # product_names = self.cart.keys()
         # products = Product.objects.filter(name__in=product_names)
         # for product in products:
         #     self.cart[str(product.id)]['product'] = product
 
         for item in self.cart.values():
-            item['price'] = Decimal(item['price'])
-            item['total_price'] = item['price'] * item['quantity']
+            item['price'] = item['price']
+            item['total_price'] = int(item['price']) * int(item['quantity'])
             yield item
+
     def get_global_price(self, product):
-        total_price = product.price * product.quantity
-        return 505
+        for product in self.cart:
+            self.cart[product]['price'] *= self.cart[product]['quantity']
+        return self.cart[product]['price']
 
     def get_total_price(self):
         """
         Подсчет стоимости товаров в корзине.
         """
-        return sum(item['price'] * item['quantity'] for item in
-                   self.cart.values())
+        total = 0
+        for product in self.cart:
+            # if self.cart[product]['total_price']:
+            total += self.cart[product].get('total_price', 0)
+        return total
 
     def clear(self):
         # удаление корзины из сессии

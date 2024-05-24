@@ -11,29 +11,27 @@
     <div class="col-md-4 col-xl-4">
       <div class="card w-75 mx-auto text-left border-secondary-subtle">
         <h4 class="card-header bg-success-subtle text-center">
-          Ваш заказ.
+          Вы выбрали доп. услуги.
         </h4>
-
 
         <ul class="list-group list-group-flush">
           {% for item, value in cart.items %}
 
 
-              <li class="list-group-item">
+              {% if value.quantity%}<li class="list-group-item">
                 {% if forloop.first %}
-                  {{ item }} - {{ value.quantity }} ч. {{ value.price }}р.
+                  {{ item }} - {{ value.quantity }} ч. {{ value.total_price }}р. 
                 {% else %}
-                  {{ item }} - {{ value.quantity }} шт. {{ value.price }}р.
-
+                  {{ item }} - {{ value.quantity }} шт. {{ value.total_price }}р.
                 {% endif %}
-              </li>
+              </li>{% endif %}
           {% endfor %}
 
           <li class="list-group-item">
-            Стоимость доп. услуг - {{ cart.1.get_global_price }}р.
+            Стоимость доп. услуг - {{ cart_instance.get_total_price }}р.
           </li>
           <li class="list-group-item text-info">
-            Общая стоимость заказа - {{ cart.total_price }}р.
+            Общая стоимость заказа - {{ cart.get_total_price }}р.
           </li>
         </ul>
         <a href="https://wa.me/79219509028?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D1%83%D0%B9%D1%82%D0%B5!%20%F0%9F%91%8B"
@@ -85,7 +83,7 @@
             <td>{{ value.quantity }}</td>
             {#                    <td><a href="{% url "cart:cart_remove" product.id%}">Remove</a></td>#}
             <td class="num">${{ value.price }}</td>
-            <td class="num">${{ item.total_price }}</td>
+            <td class="num">${{ cart.get_global_price }}</td>
           </tr>
         {% endwith %}
       {% endfor %}
