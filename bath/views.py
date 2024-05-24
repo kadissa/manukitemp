@@ -1,18 +1,13 @@
 import datetime
 from pprint import pprint
 
-from django.views.decorators.http import require_POST
-from django_htmx.http import HttpResponseClientRedirect
-from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView
+from django.urls import reverse
+from django_htmx.http import HttpResponseClientRedirect
 
 from .cart import Cart
-from .models import Customer, Appointment, Item, Product
-from .forms import ItemForm, AppointmentForm, CustomerForm, CartAddProductForm
-from django.utils import timezone
+from .forms import CustomerForm
+from .models import Customer, Appointment, Product
 
 times = list()
 
@@ -54,30 +49,7 @@ def cart_detail(request):
                                                 'cart_instance': cart_instance})
 
 
-# def items_view(request, pk):
-#     appointment = get_object_or_404(Appointment, pk=pk)
-#     form = ItemForm(request.POST or None)
-#     form.set_label_rotenburo(x=2000)
-#     print(f'appointmen.customer: {appointment.customer}')
-#     if form.is_valid():
-#         if not appointment.items:
-#             item = form.save(commit=False)
-#             item.name = appointment.customer
-#
-#             form.save()
-#             # item.save()
-#             appointment.items = item
-#             appointment.save()
-#             return redirect('confirm_items', pk=pk)
-#         else:
-#             messages.error(request, 'Вы не можете редактировать список доп. '
-#                                     'услуг, пожалуйста обратитесь к '
-#                                     'администратору')
-#     context = {'form': form, 'appoint_id': pk}
-#     return render(request, 'service.html', context)
-
-
-def finish_view(request, appoint_id):
+def confirm_date_time(request, appoint_id):
     appointment = get_object_or_404(Appointment, pk=appoint_id)
     context = {'appointment': appointment}
     return render(request, 'confirm_date_time.html', context)
@@ -97,7 +69,7 @@ def create_appointment(request, day, user_id):
     )
     times = list()
     if appointment:
-        return redirect('finish', appointment[0].id)
+        return redirect('confirm_date_time', appointment[0].id)
     else:
         return redirect('error')
 
@@ -167,10 +139,3 @@ def get_time(request, day, user_id):
     context['times'] = times
     return render(request, 'includes/time_slots.html', context)
 
-
-def confirm_items(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
-    item_id = appointment.items_id
-    items = Item.objects.filter(id=item_id)
-    context = {'appointment': appointment, 'items': items}
-    return render(request, 'confirm_items.html', context)
