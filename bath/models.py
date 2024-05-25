@@ -19,6 +19,25 @@ class Customer(models.Model):
         return self.name
 
 
+class Product(models.Model):
+    name = models.CharField('Название', max_length=60)
+    quantity = models.PositiveIntegerField('Количество', null=True, blank=True)
+    price = models.PositiveSmallIntegerField('Цена')
+    slug = models.SlugField(max_length=60, db_index=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ('id',)
+        index_together = (('name', 'slug'),)
+        verbose_name = 'Аксессуар'
+        verbose_name_plural = 'Аксессуары'
+
+
 class Appointment(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,
                                  verbose_name='Гость')
@@ -55,23 +74,25 @@ class Appointment(models.Model):
         verbose_name_plural = 'Бронирования'
 
     def __str__(self):
-        return f'Запись {self.id}. Гость-{self.customer.name}'
+        return f'Запись  {self.date} {self.start_time}-{self.end_time}'
 
 
-class Product(models.Model):
-    name = models.CharField('Название', max_length=60)
-    quantity = models.PositiveIntegerField('Количество', null=True, blank=True)
-    price = models.PositiveSmallIntegerField('Цена')
-    slug = models.SlugField(max_length=60, db_index=True)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class AppointmentItem(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE,
+                                    null=True, blank=True,
+                                    verbose_name='Заказ',
+                                    related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True,
+                                related_name='appointment_items', )
+    price = models.CharField('цена', max_length=50)
+    quantity = models.CharField('количество',
+                                max_length=15,
+                                null=True,
+                                blank=True)
 
-    def __str__(self):
-        return str(self.name)
+    def get_cost(self):
+        return int(self.price) * int(self.quantity)
 
     class Meta:
-        ordering = ('id',)
-        index_together = (('name', 'slug'),)
-        verbose_name = 'Аксессуар'
-        verbose_name_plural = 'Аксессуары'
+        verbose_name = 'Услуга в заказе'
+        verbose_name_plural = 'Услуги в заказе'

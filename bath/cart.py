@@ -15,7 +15,6 @@ class Cart(object):
         """
         Add a product to the cart
         """
-        # self.cart['cart_price'] = 0
         product_name = product.name
         self.cart[product_name] = {'quantity': quantity,
                                    'price': str(product.price)}
@@ -25,7 +24,6 @@ class Cart(object):
             self.cart[product_name]['total_price'] = (
                     product.price * int(self.cart[product_name]['quantity'])
             )
-            # self.cart['cart_price'] += self.cart[product_name]['total_price']
         self.save()
 
     def save(self):
@@ -45,22 +43,18 @@ class Cart(object):
 
     def __iter__(self):
         """
-        Iterate over the cart
-        """
-        # product_names = self.cart.keys()
-        # products = Product.objects.filter(name__in=product_names)
-        # for product in products:
-        #     self.cart[str(product.id)]['product'] = product
+    Перебор элементов в корзине и получение продуктов из базы данных.
+    """
+        product_names = self.cart.keys()
+        print(f'product_names: {product_names}')
+        products = Product.objects.filter(name__in=product_names)
+        for product in products:
+            self.cart[str(product.name)]['product'] = product
 
         for item in self.cart.values():
-            item['price'] = item['price']
-            item['total_price'] = int(item['price']) * int(item['quantity'])
+            quantity = item.get('quantity') or 0
+            item['total_price'] = int(item['price']) * int(quantity)
             yield item
-
-    def get_global_price(self, product):
-        for product in self.cart:
-            self.cart[product]['price'] *= self.cart[product]['quantity']
-        return self.cart[product]['price']
 
     def get_total_price(self):
         """

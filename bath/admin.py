@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bath.models import Appointment, Customer, Product
+from bath.models import Appointment, Customer, Product, AppointmentItem
 
 
 class AppointmentAdminInline(admin.TabularInline):
@@ -17,18 +17,6 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-@admin.register(Appointment)
-class AppointmentAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'customer',
-        'date',
-        'start_time',
-        'end_time',
-    )
-    search_fields = ('start_time',)
-
-
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = (
@@ -41,3 +29,29 @@ class CustomerAdmin(admin.ModelAdmin):
     inlines = [AppointmentAdminInline]
 
 
+class AppointmentItemInline(admin.TabularInline):
+    model = AppointmentItem
+    raw_id_fields = ['product']
+
+
+@admin.register(AppointmentItem)
+class AppointmentItemAdmin(admin.ModelAdmin):
+    list_display = (
+        'appointment',
+        'product',
+        'price',
+        'quantity',
+    )
+
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'customer',
+        'date',
+        'start_time',
+        'end_time',
+    )
+    search_fields = ('start_time',)
+    inlines = [AppointmentItemInline]

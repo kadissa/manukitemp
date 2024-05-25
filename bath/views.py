@@ -1,5 +1,4 @@
 import datetime
-from pprint import pprint
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -7,7 +6,7 @@ from django_htmx.http import HttpResponseClientRedirect
 
 from .cart import Cart
 from .forms import CustomerForm
-from .models import Customer, Appointment, Product
+from .models import Customer, Appointment, Product, AppointmentItem
 
 times = list()
 
@@ -16,37 +15,42 @@ def error(request):
     return render(request, 'error.html')
 
 
-def product_list(request):
+def add_items(request, pk):
     cart = Cart(request)
     products = Product.objects.all()
-    print('if request.method == POST1')
-
     for product in products:
-        print('if request.method == POST2')
         quantity = request.POST.get(f'{product}')
         cart.add(product=product, quantity=quantity)
-        pprint(cart.__dict__)
-    total_price = cart.get_total_price()
-    print(f'total price: {total_price}')
     if request.method == 'POST':
-        return redirect('cart')
-    print(request.session['cart'])
-
+        print(f'cart: {cart.cart}: ')
+        for item in cart.cart:
+            AppointmentItem.objects.create(
+                appointment=Appointment.objects.get(pk=pk),
+                product=Product.objects.get(name=item),
+                price=cart.cart[item]['price'],
+                quantity=cart.cart[item]['quantity'],
+            )
+            print(f'item: {item}')
+        return redirect('cart', pk=pk)
     context = {
         'products': products,
         'cart': cart
     }
-
     return render(request, 'products.html', context)
 
 
-def cart_detail(request):
-    cart_instance = Cart(request)
-    cart = request.session['cart']
-    # total_price = cart.get_total_price()
-    return render(request, 'cart_detail.html', {'cart': cart,
-                                                # 'total_price': total_price
-                                                'cart_instance': cart_instance})
+def cart_detail(request, pk):
+    cart = Cart(request)
+    # session_cart = request.session['cart']
+    appointment = get_object_or_404(Appointment, pk=pk)
+    global_price = appointment.price + cart.get_total_price()
+    context = {
+        # 'session_cart': session_cart,
+        'cart': cart,
+        'appointment': appointment,
+        'global_price': global_price
+    }
+    return render(request, 'cart_detail.html', context)
 
 
 def confirm_date_time(request, appoint_id):
@@ -138,4 +142,3 @@ def get_time(request, day, user_id):
 
     context['times'] = times
     return render(request, 'includes/time_slots.html', context)
-

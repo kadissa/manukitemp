@@ -16,9 +16,9 @@
           Вы выбрали посещение бани {{ appointment.date }}
           с {{ appointment.start_time }} до {{ appointment.end_time }}
         </h4>
-        <a href="{% url 'products' %}"
+        <a href="{% url 'products' appointment.pk%}"
            style="text-decoration: none">
-          <div class="card-body text-center bg-body-secondary rounded-1">
+          <div class="card-body text-center text-info rounded-1">
             Добавить в заказ Ротенбуро или аксессуары(веники, простыни...)
           </div>
         </a>
