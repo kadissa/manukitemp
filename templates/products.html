@@ -36,7 +36,7 @@
                 <li class="list-group-item">
                   <label for="{{ product }}">
                     {{ product.name }} {{ product.price }}р.
-                  </label>
+                  </label><br>
                   <input type="number" name="{{ product.name }}"
                          id="{{ product }}"
                          placeholder="шт.">
@@ -45,12 +45,14 @@
             {% endfor %}
 
 
-            <button type="submit" class="btn btn-secondary
+            <a href="{% url 'confirm_date_time' appointment_id %}">
+              <button type="button" class="btn btn-secondary
             rounded-1 text-black">
-              Отменить
-            </button>
+                Отменить
+              </button>
+            </a>
             <button type="submit" class="btn  btn-info">
-              Добавить
+              Далее
             </button>
           </form>
 

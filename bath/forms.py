@@ -14,16 +14,18 @@ class AppointmentForm(forms.ModelForm):
 
 class CustomerForm(forms.ModelForm):
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={'placeholder': 'Email'}),
-        label=''
-    )
+        widget=forms.TextInput(attrs={'placeholder': 'Email'}), label='')
+    phone = forms.IntegerField(
+        widget=forms.TextInput(attrs={'placeholder': 'Телефон'}),
+        label='',
+        error_messages={'error': 'Введите цифры'})
 
     class Meta:
         model = Customer
         fields = ('email', 'name', 'phone')
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Имя'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Телефон'})
+            # 'phone': forms.TextInput(attrs={'placeholder': 'Телефон'})
         }
         labels = {'name': '', 'email': '', 'phone': ''}
 

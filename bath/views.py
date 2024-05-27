@@ -1,5 +1,5 @@
 import datetime
-
+import time
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django_htmx.http import HttpResponseClientRedirect
@@ -22,7 +22,6 @@ def add_items(request, pk):
         quantity = request.POST.get(f'{product}')
         cart.add(product=product, quantity=quantity)
     if request.method == 'POST':
-        print(f'cart: {cart.cart}: ')
         for item in cart.cart:
             AppointmentItem.objects.create(
                 appointment=Appointment.objects.get(pk=pk),
@@ -30,11 +29,11 @@ def add_items(request, pk):
                 price=cart.cart[item]['price'],
                 quantity=cart.cart[item]['quantity'],
             )
-            print(f'item: {item}')
         return redirect('cart', pk=pk)
     context = {
         'products': products,
-        'cart': cart
+        'cart': cart,
+        'appointment_id': pk
     }
     return render(request, 'products.html', context)
 
@@ -79,8 +78,9 @@ def create_appointment(request, day, user_id):
 
 
 def get_customer_and_date(request):
+    global times
+    times = list()
     request_date = request.POST.get('date')
-    print(f'request.session: {request.session.items()}')
     customer_id = request.session.get('customer_id', 0)
     if Customer.objects.filter(id=customer_id).exists():
         customer = get_object_or_404(Customer,
@@ -88,11 +88,10 @@ def get_customer_and_date(request):
         form = CustomerForm(request.POST or None, instance=customer)
     else:
         form = CustomerForm(request.POST or None)
-    global times
-    times = list()
     if form.is_valid():
         if not Customer.objects.filter(
-                phone=form.cleaned_data['phone'], ).exists():
+                phone=form.cleaned_data['phone'],
+                email=form.cleaned_data['email']).exists():
             form.save()
         customer = Customer.objects.get(phone=form.cleaned_data['phone'],
                                         email=form.cleaned_data['email'])
@@ -136,9 +135,10 @@ def get_time(request, day, user_id):
     }
     if request_time:
         times.append(request_time)
+        print(f'times: {times}')
         sorted_times = sorted(times)
         context['times'] = times
         return HttpResponseClientRedirect(reverse('time', args=(day, user_id)))
 
     context['times'] = times
-    return render(request, 'includes/time_slots.html', context)
+    return render(request, 'time_slots.html', context)
