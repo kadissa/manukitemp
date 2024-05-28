@@ -52,6 +52,8 @@ class AppointmentAdmin(admin.ModelAdmin):
         'date',
         'start_time',
         'end_time',
+        'price',
+        'items_price'
     )
     search_fields = ('start_time',)
     inlines = [AppointmentItemInline]

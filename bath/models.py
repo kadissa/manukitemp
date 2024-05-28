@@ -47,13 +47,15 @@ class Appointment(models.Model):
     end_time = models.TimeField('Конец')
     duration = models.CharField('Продолжительность', max_length=60, blank=True)
     price = models.PositiveSmallIntegerField('Стоимость бани')
-    appointment_full_price = models.PositiveSmallIntegerField('Стоимость '
-                                                              'заказа рублей',
-                                                              blank=True,
-                                                              null=True)
+    items_price = models.PositiveSmallIntegerField('Цена доп.услуг', null=True,
+                                                   blank=True)
+    full_price = models.PositiveSmallIntegerField('Стоимость '
+                                                  'заказа',
+                                                  blank=True,
+                                                  null=True)
     amount = models.PositiveSmallIntegerField('Количество',
                                               blank=True,
-                                              null=True, default=2,
+                                              null=True,
                                               validators=[MinValueValidator(
                                                   2)])
     source = models.CharField('Источник', max_length=60, blank=True, null=True)
@@ -75,6 +77,10 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f'Запись  {self.date} {self.start_time}-{self.end_time}'
+
+    def save(self, *args, **kwargs):
+        self.full_price = self.price + (self.items_price or 0)
+        super().save(*args, **kwargs)
 
 
 class AppointmentItem(models.Model):

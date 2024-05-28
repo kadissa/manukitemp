@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from bath.models import Product
 
 
@@ -11,14 +9,13 @@ class Cart(object):
             cart = self.session['cart'] = {}
         self.cart = cart
 
-    def add(self, product, quantity=0):
+    def add_product(self, product, quantity=0):
         """
         Add a product to the cart
         """
         product_name = product.name
         self.cart[product_name] = {'quantity': quantity,
                                    'price': str(product.price)}
-
         self.cart[product_name]['quantity'] = quantity
         if self.cart[product_name]['quantity']:
             self.cart[product_name]['total_price'] = (
@@ -46,11 +43,9 @@ class Cart(object):
     Перебор элементов в корзине и получение продуктов из базы данных.
     """
         product_names = self.cart.keys()
-        print(f'product_names: {product_names}')
         products = Product.objects.filter(name__in=product_names)
         for product in products:
             self.cart[str(product.name)]['product'] = product
-
         for item in self.cart.values():
             quantity = item.get('quantity') or 0
             item['total_price'] = int(item['price']) * int(quantity)
@@ -62,7 +57,6 @@ class Cart(object):
         """
         total = 0
         for product in self.cart:
-            # if self.cart[product]['total_price']:
             total += self.cart[product].get('total_price', 0)
         return total
 
