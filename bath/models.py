@@ -22,7 +22,7 @@ class Customer(models.Model):
 class Product(models.Model):
     name = models.CharField('Название', max_length=60)
     quantity = models.PositiveIntegerField('Количество', null=True, blank=True)
-    price = models.PositiveSmallIntegerField('Цена')
+    price = models.PositiveSmallIntegerField('Цена', blank=True, null=True)
     slug = models.SlugField(max_length=60, db_index=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -30,6 +30,11 @@ class Product(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+    # def save(self, *args, **kwargs):
+    #     if self.id == 1:
+    #         self.price =
+
 
     class Meta:
         ordering = ('id',)
@@ -53,7 +58,7 @@ class Appointment(models.Model):
                                                   'заказа',
                                                   blank=True,
                                                   null=True)
-    amount = models.PositiveSmallIntegerField('Количество',
+    amount = models.PositiveSmallIntegerField('Количество часов',
                                               blank=True,
                                               null=True,
                                               validators=[MinValueValidator(
@@ -91,10 +96,17 @@ class AppointmentItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True,
                                 related_name='appointment_items', )
     price = models.CharField('цена', max_length=50)
+    total_price = models.PositiveIntegerField('Стоимость', blank=True,
+                                                   null=True)
     quantity = models.CharField('количество',
                                 max_length=15,
                                 null=True,
                                 blank=True)
+
+    def save(self, *args, **kwargs):
+        print('sef_price',self.price, self.quantity)
+        self.total_price = int(self.price) * int((self.quantity or 0))
+        super().save(*args, **kwargs)
 
     def get_cost(self):
         return int(self.price) * int(self.quantity)

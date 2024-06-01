@@ -19,7 +19,7 @@
             аксессуары</h4>
         {% endif %}
         <ul class="list-group list-group-flush">
-
+        
           <form action="" method="post">
             {% csrf_token %}
             {% for product in products %}
@@ -43,8 +43,6 @@
                 </li>
               {% endif %}
             {% endfor %}
-
-
             <a href="{% url 'confirm_date_time' appointment_id %}">
               <button type="button" class="btn btn-secondary
             rounded-1 text-black">
@@ -55,10 +53,9 @@
               Далее
             </button>
           </form>
-
+        
         </ul>
       </div>
     </div>
   </div>
-
 {% endblock %}

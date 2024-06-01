@@ -1,8 +1,10 @@
 import datetime
-import time
+from pprint import pprint
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django_htmx.http import HttpResponseClientRedirect
+
 from .bath_price import get_price
 from .cart import Cart
 from .forms import CustomerForm
@@ -14,38 +16,41 @@ times = list()
 def error(request):
     return render(request, 'error.html')
 
-
 def add_items(request, pk):
-    cart = Cart(request)
+    user_session = Cart(request)
     products = Product.objects.all()
+    appointment = Appointment.objects.get(pk=pk)
     for product in products:
         quantity = request.POST.get(f'{product}')
-        cart.add_product(product=product, quantity=quantity)
+        user_session.add_product(product=product,
+                                 appointment=appointment,
+                                 quantity=quantity)
     if request.method == 'POST':
-        for item in cart.cart:
+        for item in user_session.cart:
             AppointmentItem.objects.create(
-                appointment=Appointment.objects.get(pk=pk),
+                appointment=appointment,
                 product=Product.objects.get(name=item),
-                price=cart.cart[item]['price'],
-                quantity=cart.cart[item]['quantity'],
+                price=user_session.cart[item]['price'],
+                # total_price=appointment
+                quantity=user_session.cart[item]['quantity'],
             )
         return redirect('cart', pk=pk)
     context = {
         'products': products,
-        'cart': cart,
+        'cart': user_session,
         'appointment_id': pk
     }
     return render(request, 'products.html', context)
 
 
 def cart_detail(request, pk):
-    cart = Cart(request)
+    user_session = Cart(request)
     appointment = get_object_or_404(Appointment, pk=pk)
-    cart_price = cart.get_total_price()
+    cart_price = user_session.get_total_price()
     appointment.items_price = cart_price
     appointment.save()
     context = {
-        'cart': cart,
+        'cart': user_session,
         'appointment': appointment,
         'global_price': appointment.full_price
     }
@@ -62,18 +67,19 @@ def create_appointment(request, day, user_id):
     global times
     if not day or not times:
         return redirect('error')
-    times_formated = sorted(times)
+    times_formatted = sorted(times)
     price = get_price(day, times)
-    start_time = datetime.time.fromisoformat(times_formated[0][:5])
-    end_time = datetime.time.fromisoformat(times_formated[-1][6:])
+    start_time = times_formatted[0][:5]
+    end_time = times_formatted[-1][6:]
     customer = Customer.objects.get(pk=user_id)
-    appointment = Appointment.objects.update_or_create(
+    appointment, created = Appointment.objects.update_or_create(
         date=day, customer=customer, start_time=start_time,
-        end_time=end_time, status='Не подтверждён', price=price
+        end_time=end_time, status='Не подтверждён', price=price,
+        amount=len(times)
     )
     times = list()
-    if appointment:
-        return redirect('confirm_date_time', appointment[0].id)
+    if created:
+        return redirect('confirm_date_time', appointment.id)
     else:
         return redirect('error')
 
@@ -128,7 +134,6 @@ def get_time(request, day, user_id):
         slots_to_remove = range(int(start) - 1, int(end) + 1)
         for slot in slots_to_remove:
             all_time_dict.pop(str(slot), None)
-
     context = {
         'today': today.isoformat(),
         'available_slots': all_time_dict,
@@ -138,7 +143,6 @@ def get_time(request, day, user_id):
     }
     if request_time:
         times.append(request_time)
-        sorted_times = sorted(times)
+        times.sort()
         return HttpResponseClientRedirect(reverse('time', args=(day, user_id)))
-
     return render(request, 'time_slots.html', context)

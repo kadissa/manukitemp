@@ -79,4 +79,5 @@ fabric.properties
 
 .venv
 db.sqlite3
-*.xml
+*.xml!/db.produduct.json
+db.produduct.json
