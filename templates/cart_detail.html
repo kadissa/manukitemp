@@ -29,16 +29,34 @@
           {% endfor %}
           <li class="list-group-item text-info">
             Стоимость доп. услуг - {{ cart.get_total_price }}р.
+            {{ appointment.items_price }}
           </li>
           <li class="list-group-item text-info">
             Стоимость бани - {{ appointment.price }}р.
           </li>
           <li class="list-group-item text-info">
-            Общая стоимость заказа - {{ global_price }}р.
+            Общая стоимость заказа -
+            {{ appointment.price|add:cart.get_total_price }}р.
           </li>
         </ul>
-      {% include 'includes/order_payment.html' %}
+        {% include 'includes/order_payment.html' %}
+      <a href="{% url 'cart_remove' appointment.pk %}" type="button" 
+         class="button 
+      text-center 
+      text-decoration-none btn">
+          <span class="rounded bg-info">
+            Удалить допуслуги
+          </span>
+      </a>
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-4 col-xl-4">
+      
+    </div>
+  </div>
+
+
 {% endblock %}

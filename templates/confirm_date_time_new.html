@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% load static %}
+{% block title %}
+  Подтверждение заказа
+{% endblock %}
+{% block content %}
+  <br>
+  <div class="row">
+    <div class="col-md-6 col-xl-4">
+      <div class="card w-75 mx-auto text-left border-secondary-subtle">
+        <h4 class="card-header bg-success-subtle text-center">
+          Вы выбрали посещение бани {{ appointment.date }}
+          с {{ appointment.start_time }} до {{ appointment.end_time }}
+        </h4>
+        <ul class="list-group list-group-flush">
+          <img src="{% static 'image/_.jpeg' %}" class="card-img-top" 
+               alt="ротенбуро">
+          <a href="{% url 'rotenburo_times' appointment.pk %}">
+            <li class="list-group-item text-center text-info rounded-1">
+              Заказать Ротенбуро
+            </li>
+          </a>
+          <li class="list-group-item text-center text-info rounded-1">Заказать веники, простыни...</li>
+        </ul>
+        {#        <a href="{% url 'products' appointment.pk %}"#}
+        {#           style="text-decoration: none">#}
+        {#          <div class="card-text text-center text-info rounded-1">#}
+        {#            Добавить в заказ Ротенбуро или аксессуары(веники, простыни...)#}
+        {#          </div>#}
+        {#        </a>#}
+        {#        <a href="{% url 'products' appointment.pk %}"#}
+        {#           style="text-decoration: none">#}
+        {#          <div class="card-text text-center text-info rounded-1">#}
+        {#            Добавить в заказ Ротенбуро или аксессуары(веники, простыни...)#}
+        {#          </div>#}
+        {#        </a>#}
+        {% include 'includes/order_payment.html' %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

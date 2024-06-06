@@ -18,10 +18,11 @@
           <h4 class="card-header bg-success-subtle">Добавить
             аксессуары</h4>
         {% endif %}
-        <ul class="list-group list-group-flush">
         
           <form action="" method="post">
             {% csrf_token %}
+        <ul class="list-group list-group-flush">
+          
             {% for product in products %}
               {% if forloop.first %}
                 <li class="list-group-item">
@@ -41,8 +42,11 @@
                          id="{{ product }}"
                          placeholder="шт.">
                 </li>
+                
+                
               {% endif %}
             {% endfor %}
+        </ul>
             <a href="{% url 'confirm_date_time' appointment_id %}">
               <button type="button" class="btn btn-secondary
             rounded-1 text-black">
@@ -54,7 +58,7 @@
             </button>
           </form>
         
-        </ul>
+        
       </div>
     </div>
   </div>

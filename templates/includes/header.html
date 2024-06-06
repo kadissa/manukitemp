@@ -2,10 +2,16 @@
 <div class="container class_form bg-gradient bg-opacity-50 bg-body col-lg-6
     border rounded">
   <h1 class="text-3 text-center text-success-emphasis">Аренда Банного комплекса</h1>
-  <p class="text-center text-danger bg-opacity-50 bg-body 
-  border rounded">Минимальное время
-    заказа
-    2 часа</p>
+  
+    <p class="text-center text-danger bg-opacity-50 bg-body border 
+  rounded">
+      {% if times%}
+    Минимальное время заказа 2 часа
+        {% else %}
+        Выберите время для Ротенбуро
+      {% endif %}
+  </p>
+  
   <div class="row justify-content-center">
   </div>
 </div>

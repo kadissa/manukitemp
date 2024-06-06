@@ -2,11 +2,7 @@ import datetime
 
 import holidays
 
-today = datetime.date.today()
-
 ru_holidays = holidays.country_holidays('RU')
-
-print(datetime.date(2024, 6, 12) in ru_holidays)
 
 
 def get_price(ordered_date, time_slots: list) -> int:
@@ -20,10 +16,7 @@ def get_price(ordered_date, time_slots: list) -> int:
                 value = 2500
             else:
                 value = 2000
-            print(f'price: {price}, value: {value}, time_slots: '
-                  f'{time_slots}, time: {time}')
             price += value
         return price
     else:
         return 0
-

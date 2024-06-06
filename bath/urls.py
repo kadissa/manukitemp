@@ -13,5 +13,8 @@ urlpatterns = [
     path('time/<str:day>/<int:user_id>', views.get_time, name='time'),
     path('user/', views.get_customer_and_date, name='user'),
     path('error/', views.error, name='error'),
+    path('cart_remove/<int:pk>', views.remove_cart, name='cart_remove'),
+    path('rotenburo_times/<int:pk>', views.get_rotenburo_times,
+         name='rotenburo_times')
 
 ]

@@ -1,5 +1,4 @@
 import datetime
-from pprint import pprint
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -16,41 +15,43 @@ times = list()
 def error(request):
     return render(request, 'error.html')
 
+
 def add_items(request, pk):
-    user_session = Cart(request)
+    cart = Cart(request)
     products = Product.objects.all()
     appointment = Appointment.objects.get(pk=pk)
     for product in products:
         quantity = request.POST.get(f'{product}')
-        user_session.add_product(product=product,
-                                 appointment=appointment,
-                                 quantity=quantity)
+        cart.add_product(product=product,
+                         appointment=appointment,
+                         quantity=quantity)
     if request.method == 'POST':
-        for item in user_session.cart:
+        for item in cart.cart:
             AppointmentItem.objects.create(
                 appointment=appointment,
                 product=Product.objects.get(name=item),
-                price=user_session.cart[item]['price'],
-                # total_price=appointment
-                quantity=user_session.cart[item]['quantity'],
+                price=cart.cart[item]['price'],
+                quantity=cart.cart[item]['quantity'],
             )
+        items_price = AppointmentItem.objects.filter(
+            appointment=appointment)
+        appointment_items_price = sum(item.total_price for item in items_price)
+        appointment.services_price = appointment_items_price
+        appointment.save()
         return redirect('cart', pk=pk)
     context = {
         'products': products,
-        'cart': user_session,
+        'cart': cart,
         'appointment_id': pk
     }
     return render(request, 'products.html', context)
 
 
 def cart_detail(request, pk):
-    user_session = Cart(request)
+    cart = Cart(request)
     appointment = get_object_or_404(Appointment, pk=pk)
-    cart_price = user_session.get_total_price()
-    appointment.items_price = cart_price
-    appointment.save()
     context = {
-        'cart': user_session,
+        'cart': cart,
         'appointment': appointment,
         'global_price': appointment.full_price
     }
@@ -146,3 +147,29 @@ def get_time(request, day, user_id):
         times.sort()
         return HttpResponseClientRedirect(reverse('time', args=(day, user_id)))
     return render(request, 'time_slots.html', context)
+
+
+def remove_cart(request, pk):
+    cart = Cart(request)
+    cart.clear()
+    appointment = Appointment.objects.get(pk=pk)
+    appointment_items = AppointmentItem.objects.filter(appointment=appointment)
+    for item in appointment_items:
+        item.delete()
+    appointment.services_price = 0
+    appointment.save()
+    return redirect('confirm_date_time', pk)
+
+
+def get_rotenburo_times(request, pk):
+    appointment = get_object_or_404(Appointment, id=pk)
+    date = appointment.date
+    start_time = datetime.time.isoformat(appointment.start_time)[:5]
+    end_time = datetime.time.isoformat(appointment.end_time)[:5]
+    all_time_dict = {}
+    for key in range(int(start_time[:2]), int(end_time[:2])):
+        all_time_dict.update(
+            {str(key): str(key) + ':' + '00' + '-' + str(key + 1)+'-'+'00'})
+    context = {'appointment': appointment, 'available_slots': all_time_dict,
+               'date': date}
+    return render(request, 'rotenburo_times.html', context)

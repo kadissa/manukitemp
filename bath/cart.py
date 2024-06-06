@@ -1,6 +1,6 @@
 import datetime
 
-from bath.models import Product
+from bath.models import Product, Appointment
 from .bath_price import get_price
 
 
@@ -11,6 +11,7 @@ class Cart(object):
         if not cart:
             cart = self.session['cart'] = {}
         self.cart = cart
+        self.all_price = 0
 
     def add_product(self, product, appointment, quantity=0):
         """
@@ -18,7 +19,7 @@ class Cart(object):
         """
         product_name = product.name
         appointment_date = datetime.date.isoformat(appointment.date)
-        time_slots = [datetime.time.isoformat(appointment.start_time),]
+        time_slots = [datetime.time.isoformat(appointment.start_time), ]
         if product_name == 'Ротэнбуро':
             self.cart[product_name] = {'quantity': quantity,
                                        'price': get_price(appointment_date,
@@ -54,8 +55,6 @@ class Cart(object):
             self.cart[str(product.name)]['product'] = product
         for item in self.cart.values():
             quantity = item.get('quantity') or 0
-            print(f'item: {item.get("product").name}, ')
-
             item['total_price'] = int(item['price']) * int(quantity)
             yield item
 

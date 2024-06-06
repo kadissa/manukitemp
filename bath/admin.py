@@ -40,6 +40,7 @@ class AppointmentItemAdmin(admin.ModelAdmin):
         'appointment',
         'product',
         'price',
+        'total_price',
         'quantity',
     )
 
@@ -53,7 +54,7 @@ class AppointmentAdmin(admin.ModelAdmin):
         'start_time',
         'end_time',
         'price',
-        'items_price'
+        'services_price',
     )
     search_fields = ('start_time',)
     inlines = [AppointmentItemInline]

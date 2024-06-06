@@ -35,7 +35,6 @@ class Product(models.Model):
     #     if self.id == 1:
     #         self.price =
 
-
     class Meta:
         ordering = ('id',)
         index_together = (('name', 'slug'),)
@@ -52,15 +51,10 @@ class Appointment(models.Model):
     end_time = models.TimeField('Конец')
     duration = models.CharField('Продолжительность', max_length=60, blank=True)
     price = models.PositiveSmallIntegerField('Стоимость бани')
-    items_price = models.PositiveSmallIntegerField('Цена доп.услуг', null=True,
-                                                   blank=True)
-    full_price = models.PositiveSmallIntegerField('Стоимость '
-                                                  'заказа',
-                                                  blank=True,
-                                                  null=True)
+    services_price = models.PositiveIntegerField('Цена услуг', default=0)
+    full_price = models.PositiveIntegerField('Стоимость заказа')
     amount = models.PositiveSmallIntegerField('Количество часов',
-                                              blank=True,
-                                              null=True,
+                                              blank=True, null=True,
                                               validators=[MinValueValidator(
                                                   2)])
     source = models.CharField('Источник', max_length=60, blank=True, null=True)
@@ -84,7 +78,7 @@ class Appointment(models.Model):
         return f'Запись  {self.date} {self.start_time}-{self.end_time}'
 
     def save(self, *args, **kwargs):
-        self.full_price = self.price + (self.items_price or 0)
+        self.full_price = self.price + self.services_price
         super().save(*args, **kwargs)
 
 
@@ -97,19 +91,19 @@ class AppointmentItem(models.Model):
                                 related_name='appointment_items', )
     price = models.CharField('цена', max_length=50)
     total_price = models.PositiveIntegerField('Стоимость', blank=True,
-                                                   null=True)
+                                              null=True)
     quantity = models.CharField('количество',
                                 max_length=15,
                                 null=True,
                                 blank=True)
 
     def save(self, *args, **kwargs):
-        print('sef_price',self.price, self.quantity)
+        print('models:sef_price', self.price, self.quantity)
         self.total_price = int(self.price) * int((self.quantity or 0))
         super().save(*args, **kwargs)
 
     def get_cost(self):
-        return int(self.price) * int(self.quantity)
+        return int(self.price) * int(self.quantity or 0)
 
     class Meta:
         verbose_name = 'Услуга в заказе'
