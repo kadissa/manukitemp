@@ -1,0 +1,93 @@
+[
+{
+  "model": "bath.product",
+  "pk": 1,
+  "fields": {
+    "name": "Ротэнбуро",
+    "quantity": null,
+    "price": 2000,
+    "slug": "rotenburo",
+    "description": "",
+    "created_at": "2024-05-21T15:29:18.109Z",
+    "updated_at": "2024-05-30T12:28:48.863Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 2,
+  "fields": {
+    "name": "Веник берёзовый",
+    "quantity": null,
+    "price": 300,
+    "slug": "venik-beryozovyj",
+    "description": "",
+    "created_at": "2024-05-21T15:29:28.859Z",
+    "updated_at": "2024-05-21T15:29:28.859Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 3,
+  "fields": {
+    "name": "Веник дубовый",
+    "quantity": null,
+    "price": 300,
+    "slug": "venik",
+    "description": "",
+    "created_at": "2024-05-21T15:29:37.098Z",
+    "updated_at": "2024-05-21T15:30:37.022Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 4,
+  "fields": {
+    "name": "Простыня",
+    "quantity": null,
+    "price": 100,
+    "slug": "prostynya",
+    "description": "",
+    "created_at": "2024-05-21T15:29:51.242Z",
+    "updated_at": "2024-05-21T15:29:51.242Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 5,
+  "fields": {
+    "name": "Полотенце",
+    "quantity": null,
+    "price": 100,
+    "slug": "polotence",
+    "description": "",
+    "created_at": "2024-05-21T15:29:59.807Z",
+    "updated_at": "2024-05-21T15:29:59.807Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 6,
+  "fields": {
+    "name": "Халат",
+    "quantity": null,
+    "price": 100,
+    "slug": "halat",
+    "description": "",
+    "created_at": "2024-05-21T15:30:11.948Z",
+    "updated_at": "2024-05-21T15:30:11.948Z"
+  }
+},
+{
+  "model": "bath.product",
+  "pk": 7,
+  "fields": {
+    "name": "Тапки",
+    "quantity": null,
+    "price": 100,
+    "slug": "tapki",
+    "description": "",
+    "created_at": "2024-05-21T15:30:22.106Z",
+    "updated_at": "2024-05-21T15:30:22.106Z"
+  }
+}
+]

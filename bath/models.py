@@ -31,10 +31,6 @@ class Product(models.Model):
     def __str__(self):
         return str(self.name)
 
-    # def save(self, *args, **kwargs):
-    #     if self.id == 1:
-    #         self.price =
-
     class Meta:
         ordering = ('id',)
         index_together = (('name', 'slug'),)
@@ -43,13 +39,19 @@ class Product(models.Model):
 
 
 class Appointment(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE,
+    customer = models.ForeignKey(Customer,
+                                 on_delete=models.CASCADE,
                                  verbose_name='Гость')
-    status = models.CharField('Статус', max_length=60, blank=True, null=True)
+    status = models.CharField('Статус',
+                              max_length=60,
+                              blank=True,
+                              null=True)
     date = models.DateField()
     start_time = models.TimeField('Начало')
     end_time = models.TimeField('Конец')
-    duration = models.CharField('Продолжительность', max_length=60, blank=True)
+    duration = models.CharField('Продолжительность',
+                                max_length=60,
+                                blank=True)
     price = models.PositiveSmallIntegerField('Стоимость бани')
     services_price = models.PositiveIntegerField('Цена услуг', default=0)
     full_price = models.PositiveIntegerField('Стоимость заказа')
@@ -57,15 +59,27 @@ class Appointment(models.Model):
                                               blank=True, null=True,
                                               validators=[MinValueValidator(
                                                   2)])
-    source = models.CharField('Источник', max_length=60, blank=True, null=True)
-    full_name = models.CharField('Полное имя', max_length=60, blank=True,
+    source = models.CharField('Источник',
+                              max_length=60,
+                              blank=True,
+                              null=True)
+    full_name = models.CharField('Полное имя',
+                                 max_length=60,
+                                 blank=True,
                                  null=True)
-    comment = models.CharField('Комментарий', max_length=60, blank=True,
+    comment = models.CharField('Комментарий',
+                               max_length=60,
+                               blank=True,
                                null=True)
-    tag = models.CharField('Примечание', max_length=200, blank=True, null=True)
+    tag = models.CharField('Примечание',
+                           max_length=200,
+                           blank=True,
+                           null=True)
     people_count = models.PositiveSmallIntegerField('Кол-во чел.',
-                                                    blank=True, null=True)
-    prepayment = models.PositiveSmallIntegerField('Предоплата', blank=True,
+                                                    blank=True,
+                                                    null=True)
+    prepayment = models.PositiveSmallIntegerField('Предоплата',
+                                                  blank=True,
                                                   null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -83,14 +97,17 @@ class Appointment(models.Model):
 
 
 class AppointmentItem(models.Model):
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE,
+    appointment = models.ForeignKey(Appointment,
+                                    on_delete=models.CASCADE,
                                     null=True, blank=True,
                                     verbose_name='Заказ',
                                     related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True,
+    product = models.ForeignKey(Product, on_delete=models.PROTECT,
+                                null=True,
                                 related_name='appointment_items', )
     price = models.CharField('цена', max_length=50)
-    total_price = models.PositiveIntegerField('Стоимость', blank=True,
+    total_price = models.PositiveIntegerField('Стоимость',
+                                              blank=True,
                                               null=True)
     quantity = models.CharField('количество',
                                 max_length=15,
@@ -98,7 +115,6 @@ class AppointmentItem(models.Model):
                                 blank=True)
 
     def save(self, *args, **kwargs):
-        print('models:sef_price', self.price, self.quantity)
         self.total_price = int(self.price) * int((self.quantity or 0))
         super().save(*args, **kwargs)
 
@@ -108,3 +124,22 @@ class AppointmentItem(models.Model):
     class Meta:
         verbose_name = 'Услуга в заказе'
         verbose_name_plural = 'Услуги в заказе'
+
+
+class Rotenburo(models.Model):
+    appointment = models.ForeignKey(Appointment,
+                                    on_delete=models.CASCADE,
+                                    verbose_name='Заказ',
+                                    related_name='rotenburos')
+    start_time = models.CharField('Начало', max_length=16)
+    end_time = models.CharField('Конец', max_length=16)
+    amount = models.PositiveIntegerField('Количество часов')
+    price = models.PositiveIntegerField('Стоимость', default=0)
+
+    def __str__(self):
+        return (f'{self.appointment.date} - {self.appointment.start_time} - '
+                f'{self.appointment.end_time}')
+
+    class Meta:
+        verbose_name = 'Ротенбуро'
+        verbose_name_plural = 'Ротенбуры'

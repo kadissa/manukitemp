@@ -7,7 +7,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from .bath_price import get_price
 from .cart import Cart
 from .forms import CustomerForm
-from .models import Customer, Appointment, Product, AppointmentItem
+from .models import Customer, Appointment, Product, AppointmentItem, Rotenburo
 
 times = list()
 
@@ -23,10 +23,10 @@ def add_items(request, pk):
     for product in products:
         quantity = request.POST.get(f'{product}')
         cart.add_product(product=product,
-                         appointment=appointment,
                          quantity=quantity)
     if request.method == 'POST':
         for item in cart.cart:
+            print(f'item: {item}')
             AppointmentItem.objects.create(
                 appointment=appointment,
                 product=Product.objects.get(name=item),
@@ -50,17 +50,25 @@ def add_items(request, pk):
 def cart_detail(request, pk):
     cart = Cart(request)
     appointment = get_object_or_404(Appointment, pk=pk)
+    if Rotenburo.objects.filter(appointment=appointment).exists():
+        rotenburo_price = Rotenburo.objects.get(appointment=appointment).price
+    else:
+        rotenburo_price = 0
     context = {
         'cart': cart,
         'appointment': appointment,
-        'global_price': appointment.full_price
+        'rotenburo_price': rotenburo_price
     }
     return render(request, 'cart_detail.html', context)
 
 
 def confirm_date_time(request, appoint_id):
     appointment = get_object_or_404(Appointment, pk=appoint_id)
-    context = {'appointment': appointment}
+    if Rotenburo.objects.filter(appointment=appointment).exists():
+        rotenburo = Rotenburo.objects.get(appointment=appointment)
+    else:
+        rotenburo = None
+    context = {'appointment': appointment, 'rotenburo': rotenburo}
     return render(request, 'confirm_date_time.html', context)
 
 
@@ -140,7 +148,7 @@ def get_time(request, day, user_id):
         'available_slots': all_time_dict,
         'date': datetime.date.fromisoformat(day),
         'day': day, 'user_id': user_id,
-        'times': times,
+        'times': times, 'bath_times': True,
     }
     if request_time:
         times.append(request_time)
@@ -149,7 +157,7 @@ def get_time(request, day, user_id):
     return render(request, 'time_slots.html', context)
 
 
-def remove_cart(request, pk):
+def clear_cart(request, pk):
     cart = Cart(request)
     cart.clear()
     appointment = Appointment.objects.get(pk=pk)
@@ -162,6 +170,13 @@ def remove_cart(request, pk):
 
 
 def get_rotenburo_times(request, pk):
+    global times
+    request_time = request.POST.get('time')
+    reset = request.POST.get('reset')
+    if reset:
+        times = list()
+        return HttpResponseClientRedirect(reverse('rotenburo_times',
+                                                  args=(pk,)))
     appointment = get_object_or_404(Appointment, id=pk)
     date = appointment.date
     start_time = datetime.time.isoformat(appointment.start_time)[:5]
@@ -169,7 +184,30 @@ def get_rotenburo_times(request, pk):
     all_time_dict = {}
     for key in range(int(start_time[:2]), int(end_time[:2])):
         all_time_dict.update(
-            {str(key): str(key) + ':' + '00' + '-' + str(key + 1)+'-'+'00'})
-    context = {'appointment': appointment, 'available_slots': all_time_dict,
-               'date': date}
+            {str(key): str(key) + ':' + '00' + '-' + str(
+                key + 1) + ':' + '00'})
+    if request_time:
+        times.append(request_time)
+        times.sort()
+
+        return HttpResponseClientRedirect(
+            reverse('rotenburo_times', args=(pk,)))
+    context = {
+        'appointment': appointment,
+        'available_slots': all_time_dict,
+        'date': date,
+        'times': times, 'rotenburo_times': True}
     return render(request, 'rotenburo_times.html', context)
+
+
+def add_rotenburo(request, pk):
+    global times
+    appointment = get_object_or_404(Appointment, pk=pk)
+    day = appointment.date.isoformat()
+    start_time = times[0][:2]
+    end_time = times[-1].split('-')[-1][:2]
+    Rotenburo.objects.update_or_create(
+        appointment=appointment, price=get_price(day, times),
+        start_time=start_time, end_time=end_time, amount=len(times))
+    times = list()
+    return redirect('confirm_date_time', pk)

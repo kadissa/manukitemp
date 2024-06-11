@@ -8,75 +8,30 @@
   <br>
 
   <div class="container text-center" id="time-slots">
-    <div class="row row-cols-md-6  justify-content-center">
-      {% for key, time_slot in available_slots.items %}
-        <div class="col">
-          {% with date|date:'w' as week_day %}
-              {% if week_day|str_to_int > 5  or week_day|str_to_int == 0 %}
-                <label for="{{ time_slot }}" class="bg-opacity-50 
-                bg-success mt-3 
-                border-1 
-                border rounded">
-                  2500руб.
-                </label>
-              {% elif week_day|str_to_int == 5 and key|str_to_int > 17 %}
-                <label for="{{ time_slot }}" class="bg-opacity-50 
-              bg-success mt-3 
-                border-1 
-                border rounded">
-                  2500руб.
-                </label>
-              {% else %}
-                <label for="{{ time_slot }}" class="bg-opacity-50 
-              bg-success mt-3 
-                border-1 
-                border rounded">
-                  2000руб.
-                </label>
-              {% endif %}
-              <input type="text" name="time" size="8" id="{{ time_slot }}"
-                     value="{{ time_slot }}"
-                     class="mt-0 btn btn-warning bg-white"
-                     hx-post="{% url 'rotenburo_times' appointment.pk %}"
-                     hx-trigger="click"
-                     hx-push-url="true"
-                     HX-Refresh="true"
-                     readonly
-              >
-{#              <input type="text" name="time" size="8"#}
-{#                     value="{{ time_slot }}"#}
-{#                     class="mt-3 btn btn-warning bg-white"#}
-{#                     data-hx-post="{% url 'rotenburo_times' appointment.pk %}"#}
-{#                     hx-confirm="Are you sure you want to delete this event?"#}
-{#                     hx-trigger="click"#}
-{#                     hx-push-url="true"#}
-{#                     hx-swap="none"#}
-{#                     HX-Refresh="true"#}
-{#                     readonly#}
-{#                     disabled#}
-{#              >#}
-          {% endwith %}
-        </div>
-      {% endfor %}
-    </div>
+
+  {% include 'includes/time_slots_template.html' %}
+
+  <div class="container text-center">
     <a href="{% url 'confirm_date_time' appointment.pk %}">
       <button class="btn mt-3 bg-primary-subtle border-info" style="float: 
-        left">Без Ротенбуро
+        left"
+      >
+        Без Ротенбуро
       </button>
     </a>
     {% if times %}
-      {% if times|length_is:1 %}
-        <button class="btn mt-3 btn-danger" style="float: right" type="submit">
-          Выберите более одного слота
-        </button>
-      {% else %}
-        <a href="{% url 'create_appointment' day user_id %}">
-          <button class="btn mt-3 btn-success" style="float: right"
-                  type="submit">
-            Заказать
-          </button>
-        </a>
-      {% endif %}
+      {% include 'includes/inputs/reset_times_input.html' %}
     {% endif %}
   </div>
+
+  {% if times %}
+    <a href="{% url 'add_rotenburo' appointment.pk %}">
+      <button class="btn mt-3 btn-success" style="float: right"
+              type="submit">
+        Заказать
+      </button>
+    </a>
+  {% endif %}
 {% endblock %}
+
+</div>

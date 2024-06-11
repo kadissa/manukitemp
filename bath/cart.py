@@ -1,7 +1,4 @@
-import datetime
-
-from bath.models import Product, Appointment
-from .bath_price import get_price
+from bath.models import Product
 
 
 class Cart(object):
@@ -13,20 +10,13 @@ class Cart(object):
         self.cart = cart
         self.all_price = 0
 
-    def add_product(self, product, appointment, quantity=0):
+    def add_product(self, product, quantity=0):
         """
         Add a product to the cart
         """
         product_name = product.name
-        appointment_date = datetime.date.isoformat(appointment.date)
-        time_slots = [datetime.time.isoformat(appointment.start_time), ]
-        if product_name == 'Ротэнбуро':
-            self.cart[product_name] = {'quantity': quantity,
-                                       'price': get_price(appointment_date,
-                                                          time_slots)}
-        else:
-            self.cart[product_name] = {'quantity': quantity,
-                                       'price': str(product.price)}
+        self.cart[product_name] = {'quantity': quantity,
+                                   'price': str(product.price)}
         self.cart[product_name]['quantity'] = quantity
         self.save()
 

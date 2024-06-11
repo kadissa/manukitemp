@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from bath.models import Appointment, Customer, Product, AppointmentItem
+from bath.models import (Appointment, Customer, Product, AppointmentItem,
+                         Rotenburo)
 
 
 class AppointmentAdminInline(admin.TabularInline):
@@ -58,3 +59,14 @@ class AppointmentAdmin(admin.ModelAdmin):
     )
     search_fields = ('start_time',)
     inlines = [AppointmentItemInline]
+
+
+@admin.register(Rotenburo)
+class RotenburoAdmin(admin.ModelAdmin):
+    list_display = (
+        'appointment',
+        'start_time',
+        'end_time',
+        'amount',
+        'price',
+    )

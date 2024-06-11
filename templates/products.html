@@ -24,16 +24,6 @@
         <ul class="list-group list-group-flush">
           
             {% for product in products %}
-              {% if forloop.first %}
-                <li class="list-group-item">
-                  <label for="{{ product }}">
-                    {{ product.name }} {{ product.price }}р/ч.
-                  </label>
-                  <input type="number" name="{{ product.name }}"
-                         id="{{ product }}"
-                         placeholder="часов.">
-                </li>
-              {% else %}
                 <li class="list-group-item">
                   <label for="{{ product }}">
                     {{ product.name }} {{ product.price }}р.
@@ -44,7 +34,6 @@
                 </li>
                 
                 
-              {% endif %}
             {% endfor %}
         </ul>
             <a href="{% url 'confirm_date_time' appointment_id %}">
